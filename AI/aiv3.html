@@ -27,18 +27,26 @@
             word-wrap: break-word;
         }
         .user-prompt {
-            
             color: white;
             align-self: flex-end;
             text-align: right;
             margin-left: auto;
         }
         .bot-response {
-            
             color: white;
             align-self: flex-start;
             text-align: left;
             margin-right: auto;
+        }
+        .input-group {
+            display: flex;
+        }
+        #promptInput {
+            flex: 1;
+        }
+        #sendButton {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
         }
     </style>
 </head>
@@ -47,11 +55,15 @@
         <h2 class="mt-4 mb-4 text-center">CHL4</h2>
         <div id="chatBox" class="d-flex flex-column"></div>
         <form id="promptForm" class="mt-4">
-            <div class="form-group">
+            <div class="input-group">
                 <input type="text" class="form-control" id="promptInput" placeholder="Enter your prompt">
+                <button type="submit" class="btn btn-warning" id="sendButton">Send</button>
             </div>
-            <button type="submit" class="btn btn-warning w-100">Send Prompt</button>
         </form>
+
+        <p class="text-center mt-5">
+            Back to <a href="../index.html" class="text-warning">Menu</a>
+        </p>
     </div>
 
     <footer class="text-center mt-5">Developed by <a href="https://www.facebook.com/chaelllllll">Chael</a></footer>
