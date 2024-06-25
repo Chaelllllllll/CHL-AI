@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/jpeg" href="./Images/images.jpeg">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            padding: 20px;
+        }
+        #chatBox {
+            max-height: 500px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .user-prompt {
+            text-align: right;
+        }
+        .bot-response {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4 mb-4 text-center">Chat Interface</h2>
+        <div id="chatBox"></div>
+        <form id="promptForm" class="mt-4">
+            <div class="form-group">
+                <label for="promptInput">Enter Prompt:</label>
+                <input type="text" class="form-control" id="promptInput" placeholder="Enter your prompt">
+            </div>
+            <button type="submit" class="btn btn-warning w-100">Send Prompt</button>
+        </form>
+    </div>
+
+    <footer class="text-center mt-5">Developed by <a href="https://www.facebook.com/chaelllllll">Chael</a></footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+        $(document).ready(function() {
+            // Function to load conversation history from local storage
+            function loadConversation() {
+                var conversation = localStorage.getItem('conversation');
+                if (conversation) {
+                    conversation = JSON.parse(conversation);
+                    conversation.forEach(function(message) {
+                        $('#chatBox').append('<div class="message ' + message.type + ' alert alert-' + (message.type === 'user-prompt' ? 'primary' : 'success') + '" role="alert">' + message.text + '</div>');
+                    });
+                    $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+                }
+            }
+
+            // Function to save conversation history to local storage
+            function saveConversation(message) {
+                var conversation = localStorage.getItem('conversation');
+                conversation = conversation ? JSON.parse(conversation) : [];
+                conversation.push(message);
+                localStorage.setItem('conversation', JSON.stringify(conversation));
+            }
+
+            // Load conversation history when the page loads
+            loadConversation();
+
+            // Handle form submission
+            $('#promptForm').submit(function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Gather form data
+                var promptInput = $('#promptInput').val();
+
+                // Validate input (basic validation)
+                if (!promptInput) {
+                    $('#chatBox').append('<div class="alert alert-danger" role="alert">Please enter a prompt.</div>');
+                    setTimeout(function() {
+                        $('.alert-danger').remove();
+                    }, 5000);
+                    return;
+                }
+
+                // Add user prompt to chat box and save to local storage
+                var userMessage = { type: 'user-prompt', text: promptInput };
+                $('#chatBox').append('<div class="message user-prompt alert alert-primary" role="alert">' + promptInput + '</div>');
+                saveConversation(userMessage);
+                $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+
+                // Send data to the API via AJAX
+                $.ajax({
+                    type: 'GET',
+                    url: 'https://markdevs-api.onrender.com/api/gpt4o', // Your API URL
+                    data: {
+                        q: promptInput
+                    },
+                    success: function(response) {
+                        if (response.status) {
+                            var botMessage = { type: 'bot-response', text: response.response };
+                            $('#chatBox').append('<div class="message bot-response alert alert-success" role="alert">' + response.response + '</div>');
+                            saveConversation(botMessage);
+                        } else {
+                            $('#chatBox').append('<div class="message bot-response alert alert-danger" role="alert">Failed to get response.</div>');
+                        }
+                        $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#chatBox').append('<div class="message bot-response alert alert-danger" role="alert">Failed to get response.</div>');
+                        $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+                        console.error('Error:', error);
+                    }
+                });
+
+                // Clear input field
+                $('#promptInput').val('');
+            });
+        });
+    </script>
+</body>
+</html>
