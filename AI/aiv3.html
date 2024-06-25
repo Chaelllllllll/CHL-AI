@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Interface</title>
+    <title>CHL | AI</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/jpeg" href="./Images/images.jpeg">
@@ -13,30 +13,41 @@
             padding: 20px;
         }
         #chatBox {
-            max-height: 500px;
+            max-height: 700px;
             overflow-y: scroll;
-            border: 1px solid #ccc;
+            border: none;
             padding: 10px;
             margin-top: 20px;
         }
         .message {
             margin: 10px 0;
+            padding: 10px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
         }
         .user-prompt {
+            
+            color: white;
+            align-self: flex-end;
             text-align: right;
+            margin-left: auto;
         }
         .bot-response {
+            
+            color: white;
+            align-self: flex-start;
             text-align: left;
+            margin-right: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2 class="mt-4 mb-4 text-center">CHL4</h2>
-        <div id="chatBox"></div>
+        <div id="chatBox" class="d-flex flex-column"></div>
         <form id="promptForm" class="mt-4">
             <div class="form-group">
-                <label for="promptInput">Enter Prompt:</label>
                 <input type="text" class="form-control" id="promptInput" placeholder="Enter your prompt">
             </div>
             <button type="submit" class="btn btn-warning w-100">Send Prompt</button>
@@ -58,7 +69,7 @@
                 if (conversation) {
                     conversation = JSON.parse(conversation);
                     conversation.forEach(function(message) {
-                        $('#chatBox').append('<div class="message ' + message.type + ' alert alert-' + (message.type === 'user-prompt' ? 'primary' : 'success') + '" role="alert">' + message.text + '</div>');
+                        $('#chatBox').append('<div class="message ' + message.type + '">' + message.text + '</div>');
                     });
                     $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
                 }
@@ -93,7 +104,7 @@
 
                 // Add user prompt to chat box and save to local storage
                 var userMessage = { type: 'user-prompt', text: promptInput };
-                $('#chatBox').append('<div class="message user-prompt alert alert-primary" role="alert">' + promptInput + '</div>');
+                $('#chatBox').append('<div class="message user-prompt bg-warning">' + promptInput + '</div>');
                 saveConversation(userMessage);
                 $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
 
@@ -107,7 +118,7 @@
                     success: function(response) {
                         if (response.status) {
                             var botMessage = { type: 'bot-response', text: response.response };
-                            $('#chatBox').append('<div class="message bot-response alert alert-success" role="alert">' + response.response + '</div>');
+                            $('#chatBox').append('<div class="message bot-response bg-success">' + response.response + '</div>');
                             saveConversation(botMessage);
                         } else {
                             $('#chatBox').append('<div class="message bot-response alert alert-danger" role="alert">Failed to get response.</div>');
